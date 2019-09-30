@@ -9,15 +9,17 @@
 import Foundation
 
 struct Post: Codable {
-    // MARK: - Properties
-    let username: String
-    let text: String
-    let timestamp: TimeInterval
     
-    // MARK: - Memberwise Initilizer
-    init(username: String, text: String, timestamp: TimeInterval = Date().timeIntervalSince1970) {
-        self.username = username
+    let text: String
+    var timestamp: TimeInterval
+    let username: String
+    //queryTimeStamp - part 2
+    
+    init(text: String, username: String, timestamp: TimeInterval = Date().timeIntervalSince1970) {
         self.text = text
+        self.username = username
         self.timestamp = timestamp
     }
 }
+
+

@@ -9,41 +9,35 @@
 import Foundation
 
 class PostController {
-    // MARK: - Default URL
-    let baseURL = URL(string: "http://devmtn-posts.firebaseio.com/posts")
     
-    // MARK: - Properties
-    // Source of truth
+    let baseURL = URL(string: "https://devmtn-posts.firebaseio.com/posts")
+    
     var posts: [Post] = []
     
-    // MARK: URLRequest
-    func fetchPosts(completion: @escaping() -> Void) {
-        guard let unwrappedURL = baseURL else { completion(); return }
-        let getterEndpoint = unwrappedURL.appendingPathExtension("json")
-        
-        var request = URLRequest(url: getterEndpoint)
+     func fetchPosts(completion: @escaping() -> Void) {
+        guard let url = baseURL else {fatalError("URL optional is nil")}
+        let getterEndPoint = url.appendingPathExtension("json")
+        var request = URLRequest(url: getterEndPoint)
         request.httpBody = nil
         request.httpMethod = "GET"
         
         let dataTask = URLSession.shared.dataTask(with: request) { (data, _, error) in
             if let error = error {
-                print(error.localizedDescription)
+                print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
                 completion()
                 return
             }
-            
-            guard let data = data else { completion(); return}
-            
-            let decoder = JSONDecoder()
-            
+            guard let data = data else {completion(); return}
+            let jsonDecoder = JSONDecoder()
             do {
-                let postsDictionary = try decoder.decode([String:Post].self, from: data)
-                var posts: [Post] = postsDictionary.compactMap({ $0.value })
-                posts.sort(by: { $0.timestamp > $1.timestamp })
+                
+                let postDictionary = try jsonDecoder.decode([String:Post].self, from: data)
+                var posts: [Post] = postDictionary.compactMap({$0.value})
+                posts.sort(by: { $0.timestamp > $1.timestamp})
                 self.posts = posts
                 completion()
             } catch {
-                print(error)
+                print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
                 completion()
                 return
             }
